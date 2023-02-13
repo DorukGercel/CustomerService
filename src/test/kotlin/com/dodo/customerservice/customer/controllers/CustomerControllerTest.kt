@@ -124,4 +124,30 @@ class CustomerControllerTest(@Autowired val mockMvc: MockMvc) {
             .andExpect(jsonPath("$.statusCode").value(HttpStatus.OK.value()))
             .andExpect(jsonPath("$.customer.email").value(customer.email))
     }
+
+    @Test
+    fun fetchTest_fail_notExist() {
+        val customer = CustomerModel(name = testName, email = testEmail, addresses = listOf(AddressModel(streetName = testStreet, city = testCity, postCode = testPostCode, state = testState, country = testCountry)))
+
+        every { customerService.fetch(any()) } returns Pair(OpCode.INTERNAL_ERROR, null)
+        every { customerService.fetch(CustomerQuery(testCustomerID, null, null)) } returns Pair(OpCode.SUCCESS, customer)
+
+        mockMvc.perform(get("/customers?id=${testCustomerID+1}"))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.statusCode").value(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+    }
+
+    @Test
+    fun fetchTest_fail_emptyQuery() {
+        val customer = CustomerModel(name = testName, email = testEmail, addresses = listOf(AddressModel(streetName = testStreet, city = testCity, postCode = testPostCode, state = testState, country = testCountry)))
+
+        every { customerService.fetch(any()) } returns Pair(OpCode.INTERNAL_ERROR, null)
+        every { customerService.fetch(CustomerQuery(null, null, null)) } returns Pair(OpCode.SUCCESS, customer)
+
+        mockMvc.perform(get("/customers"))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.statusCode").value(HttpStatus.BAD_REQUEST.value()))
+    }
 }

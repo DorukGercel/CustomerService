@@ -30,7 +30,7 @@ class CustomerController(private val customerService: CustomerService){
     @GetMapping("")
     fun fetch(@RequestParam id: Int?, @RequestParam name: String?, @RequestParam email: String?): FetchResponseDTO {
         if(id == null && name == null && email == null) {
-            FetchResponseDTO(HttpStatus.BAD_REQUEST.value())
+            return FetchResponseDTO(HttpStatus.BAD_REQUEST.value())
         }
         val (opCode, customers) = customerService.fetch(CustomerQuery(id = id, name = name, email = email))
         return if (opCode != OpCode.SUCCESS || customers == null) {
