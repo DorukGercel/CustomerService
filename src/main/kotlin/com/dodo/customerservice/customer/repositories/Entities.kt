@@ -6,8 +6,8 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
 object Customers : IntIdTable() {
-    val name = text("name")
-    val email = text("email")
+    val name = text("name").uniqueIndex()
+    val email = text("email").uniqueIndex()
 }
 
 object Addresses: IntIdTable() {
