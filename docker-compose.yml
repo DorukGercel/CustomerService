@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  server:
+    build: .
+    image: customer-service
+    container_name: customer-service
+    hostname: server
+    volumes:
+      - server-sync:/home/pisti-server
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    container_name: customer-service-psql
+    image: postgres
+    hostname: db
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "customer_service"
+      PGDATA: "/data/postgres-customer_service"
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/data/postgres-customer_service
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  server-sync:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "${PWD}"

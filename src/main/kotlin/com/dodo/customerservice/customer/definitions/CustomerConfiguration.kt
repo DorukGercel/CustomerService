@@ -13,11 +13,11 @@ import org.springframework.core.env.Environment
 class CustomerConfiguration(val env: Environment) {
     @Bean
     fun getDatabase(): Database {
-        val hostname = env.getProperty("hostname", "db")
-        val port = env.getProperty("port", "5432")
+        val hostname = env.getProperty("db_hostname", "db")
+        val port = env.getProperty("db_port", "5432")
         val dbName = env.getProperty("db_name", "customer_service")
-        val username = env.getProperty("username", "root")
-        val password = env.getProperty("password", "root")
+        val username = env.getProperty("db_username", "root")
+        val password = env.getProperty("db_password", "root")
 
         val db = Database.connect("jdbc:postgresql://${hostname}:${port}/${dbName}",
                 driver = "org.postgresql.Driver", user = username, password = password)
